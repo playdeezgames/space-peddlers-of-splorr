@@ -33,6 +33,12 @@ smoke_new_game :: proc(t: ^testing.T) {
 	dump("03-system-info")
 	key('b')
 	dump("04-buy-cargo")
+	key('w')
+	dump("05-warp")
+	key('g')
+	dump("06-galaxy")
+	key('y')
+	dump("07-shipyard")
 }
 
 // Random play: taps anywhere, shortcut letters, Enter, digits and the menu.
