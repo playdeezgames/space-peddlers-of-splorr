@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<title>Space Peddlers of SPLORR!!</title>
+<style>
+	html, body { margin: 0; background: #2b2b33; color: #ccc; font: 13px/1.4 sans-serif; }
+	main { display: flex; flex-direction: column; align-items: center; padding: 8px 0; }
+	#device { background: #55555f; border-radius: 14px; padding: 10px 10px 6px; box-shadow: 0 4px 18px #0008; }
+	canvas { display: block; image-rendering: pixelated; touch-action: none; background: #fff; cursor: pointer; }
+	#silk { display: flex; gap: 6px; justify-content: center; margin-top: 6px; }
+	#silk button { font: bold 12px sans-serif; background: #3a3a44; color: #ddd; border: 1px solid #222; border-radius: 10px; padding: 5px 12px; cursor: pointer; }
+	#silk button:active { background: #222; }
+	#kbd { position: absolute; left: -1000px; width: 10px; opacity: 0; }
+	footer { max-width: 640px; margin: 8px auto 16px; padding: 0 16px; text-align: center; font-size: 11px; color: #999; }
+	footer a { color: #aaa; }
+	.keys { color: #888; }
+</style>
+</head>
+<body>
+<main>
+	<div id="device">
+		<canvas id="screen" width="320" height="320"></canvas>
+		<div id="silk">
+			<button id="b-menu" title="Menu (Esc or F2)">Menu</button>
+			<button id="b-up" title="Page up">&#9650;</button>
+			<button id="b-down" title="Page down">&#9660;</button>
+			<button id="b-kbd" title="Keyboard">Keyboard</button>
+		</div>
+	</div>
+	<input id="kbd" type="text" autocomplete="off" autocapitalize="off" spellcheck="false">
+</main>
+<footer>
+	<p class="keys">Tap with the mouse or a finger. Keys: letters are the original's shortcuts (B buy, S sell, Y shipyard, W warp, G galaxy, I info, H help), Esc or F2 opens the menu, Enter confirms, arrows page.</p>
+	<p>An Odin/WebAssembly port of <b>Space Trader 1.2.2</b> by Pieter Spronck (GNU GPL; additional coding by Sam Anderson and Samuel Goldstein).
+	Source: <a href="https://github.com/playdeezgames/space-peddlers-of-splorr">github.com/playdeezgames/space-peddlers-of-splorr</a> (GPL).
+	Font m6x11 by Daniel Linssen. Ported with an AI agent (Claude Code); the original pictures are not used.</p>
+	<p><a href="https://thegrumpygamedev.itch.io/">itch.io</a> · <a href="https://playdeezgames.github.io/oeuvre-of-splorr/">more games</a></p>
+</footer>
+<script src="odin.js"></script>
+<script>
+"use strict";
+const W = 320, H = 320, PW = 160, PH = 160, DB_KEY = "space-peddlers-db";
+const canvas = document.getElementById("screen");
+const g2 = canvas.getContext("2d");
+const img = g2.createImageData(W, H);
+const memory = new odin.WasmMemoryInterface();
+let ex = null;
+
+function fit() {
+	const room = Math.min(window.innerWidth - 40, window.innerHeight - 150);
+	const s = room >= W ? Math.floor(room / W) : room / W;
+	canvas.style.width = Math.floor(W * s) + "px";
+	canvas.style.height = Math.floor(H * s) + "px";
+}
+window.addEventListener("resize", fit);
+fit();
+
+function draw() {
+	const p = ex.platform_frame();
+	img.data.set(new Uint8Array(memory.memory.buffer, p, W * H * 4));
+	g2.putImageData(img, 0, 0);
+}
+
+function persist() {
+	if (!ex.platform_db_dirty()) return;
+	const p = ex.platform_db_ptr(), n = ex.platform_db_len();
+	const bytes = new Uint8Array(memory.memory.buffer, p, n);
+	let s = "";
+	for (let i = 0; i < n; i += 0x8000) s += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+	try { localStorage.setItem(DB_KEY, btoa(s)); ex.platform_db_clean(); } catch (e) { console.warn("save failed", e); }
+}
+
+function after() { draw(); persist(); }
+
+function start() {
+	ex = memory.exports;
+	let saved = null;
+	try { const t = localStorage.getItem(DB_KEY); if (t) saved = Uint8Array.from(atob(t), c => c.charCodeAt(0)); } catch (e) {}
+	let n = 0;
+	if (saved) {
+		const p = ex.platform_alloc(saved.length);
+		new Uint8Array(memory.memory.buffer, p, saved.length).set(saved);
+		n = saved.length;
+	}
+	ex.platform_init((Math.random() * 0xFFFFFFFF) >>> 0, n);
+	after();
+	let last = performance.now();
+	function loop(t) {
+		ex.platform_tick(Math.min(1000, Math.round(t - last)));
+		last = t;
+		draw();
+		requestAnimationFrame(loop);
+	}
+	requestAnimationFrame(loop);
+}
+
+canvas.addEventListener("pointerdown", e => {
+	if (!ex) return;
+	e.preventDefault();
+	const r = canvas.getBoundingClientRect();
+	const x = Math.floor((e.clientX - r.left) * PW / r.width);
+	const y = Math.floor((e.clientY - r.top) * PH / r.height);
+	ex.platform_tap(x, y);
+	after();
+});
+
+function key(chr) { if (ex) { ex.platform_key(chr); after(); } }
+document.getElementById("b-menu").onclick = () => { if (ex) { ex.platform_menu(); after(); } };
+document.getElementById("b-up").onclick = () => key(0x0B);
+document.getElementById("b-down").onclick = () => key(0x0C);
+const kbd = document.getElementById("kbd");
+document.getElementById("b-kbd").onclick = () => kbd.focus();
+kbd.addEventListener("input", () => { for (const ch of kbd.value) key(ch.charCodeAt(0)); kbd.value = ""; });
+
+window.addEventListener("keydown", e => {
+	if (!ex || e.ctrlKey || e.metaKey || e.altKey) return;
+	let c = -1;
+	if (e.key === "Escape" || e.key === "F2") { ex.platform_menu(); after(); e.preventDefault(); return; }
+	if (document.activeElement === kbd && e.key.length === 1) return; // the input event handles it
+	if (e.key === "Enter") c = 0x0A;
+	else if (e.key === "Backspace") c = 0x08;
+	else if (e.key === "PageUp" || e.key === "ArrowUp") c = 0x0B;
+	else if (e.key === "PageDown" || e.key === "ArrowDown") c = 0x0C;
+	else if (e.key.length === 1) c = e.key.charCodeAt(0);
+	if (c >= 0) { key(c); e.preventDefault(); }
+});
+
+odin.runWasm("game.wasm", null, {}, memory).then(start);
+</script>
+</body>
+</html>
