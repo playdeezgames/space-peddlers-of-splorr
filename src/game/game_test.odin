@@ -26,6 +26,13 @@ smoke_new_game :: proc(t: ^testing.T) {
 	dump("01-after-tap")
 	key(chrLineFeed)
 	dump("02-after-enter")
+	for y in ([]i32{81, 96, 112, 126}) {
+		for _ in 0 ..< 4 {tap(101, y)} // spend the 16 skill points
+	}
+	tap(79, 149) // OK
+	dump("03-system-info")
+	key('b')
+	dump("04-buy-cargo")
 }
 
 // Random play: taps anywhere, shortcut letters, Enter, digits and the menu.
