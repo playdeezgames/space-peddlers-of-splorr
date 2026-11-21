@@ -31,6 +31,7 @@ art_size :: proc "contextless" (id: i32) -> (i32, i32) {
 
 // Placeholder pictures: stars and markers as small shapes, ships as hulls.
 art_draw :: proc "contextless" (id: i32, x, y: i32, w_in, h_in: i32) {
+	if headless {return}
 	w, h := art_size(id)
 	switch id {
 	case 1200, 1900: // system dot (unvisited / visited)

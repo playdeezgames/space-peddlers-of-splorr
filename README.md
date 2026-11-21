@@ -40,6 +40,11 @@ tools/build.sh                    # build/web (add --size for shipping)
 python3 -m http.server -d build/web 8000
 ```
 
+## Play-testing
+
+`playtest/` holds scripted players that play the real game for balance testing
+(`odin build playtest -o:speed -out:build/playtest`). The findings are in `PLAYTEST.md`.
+
 ## Credits
 
 - Space Trader: Pieter Spronck, with Sam Anderson and Samuel Goldstein. GPL.

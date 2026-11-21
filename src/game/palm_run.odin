@@ -133,12 +133,29 @@ Input_Kind :: enum u8 {
 	Tap,
 	Key,
 	Tick,
+	Call, // playtest only: runs bot_hook inside the transaction
 }
 
 Input :: struct {
 	kind: Input_Kind,
 	x, y: i16,
 	chr:  u16,
+	a, b: i32, // Call arguments
+}
+
+// Playtest hook for .Call inputs (nil in the shipped game).
+bot_hook: proc(inp: Input)
+
+// What the last blocked transaction is waiting on (read by the playtest bots).
+Wait_Info :: struct {
+	alert:  u16,
+	dialog: u16,
+	bx, bw: [4]i32,
+	by, nb: i32,
+	// the waiting dialog's buttons (the C code may delete the form while it waits)
+	ids:    [16]u16,
+	rects:  [16][4]i32,
+	nids:   i32,
 }
 
 Replay :: struct {
@@ -150,6 +167,8 @@ Replay :: struct {
 	fb_shown: [FB_W * FB_H]u8,
 	started:  bool,
 	guard:    int,
+	wait:     Wait_Info,
+	no_save:  bool, // playtest: skip the autosave after each commit
 }
 
 replay: Replay
@@ -203,7 +222,7 @@ input_event :: proc(inp: Input) -> EventType {
 	case .Key:
 		ev.eType = keyDownEvent
 		ev.data.keyDown.chr = inp.chr
-	case .Tick, .Start:
+	case .Tick, .Start, .Call:
 		ev.eType = nilEvent
 	}
 	return ev
@@ -486,7 +505,12 @@ FrmCustomAlert :: proc(alertId: u16, s1, s2, s3: cstring) -> u16 {
 	defer end_block()
 	for {
 		inp, ok := next_input()
-		if !ok {return 0xFFFF}
+		if !ok {
+			if replay.waiting && replay.wait.alert == 0 && replay.wait.dialog == 0 {
+				replay.wait = {alert = alertId, bx = L.bx, bw = L.bw, by = L.by, nb = L.nbuttons}
+			}
+			return 0xFFFF
+		}
 		if inp.kind == .Key {
 			if inp.chr == chrLineFeed || inp.chr == ' ' {
 				world.fb = saved
@@ -604,7 +628,20 @@ FrmDoDialog :: proc(f: ^FormType) -> u16 {
 	result: u16 = 0
 	loop: for {
 		ev, ok := next_event()
-		if !ok {break}
+		if !ok {
+			if replay.waiting && replay.wait.alert == 0 && replay.wait.dialog == 0 {
+				replay.wait.dialog = f.id
+				for i in 0 ..< f.nobj {
+					o := &f.objs[i]
+					if (o.kind == .Button || o.kind == .Repeat_Button) && o.usable && replay.wait.nids < 16 {
+						replay.wait.ids[replay.wait.nids] = o.id
+						replay.wait.rects[replay.wait.nids] = {o.x, o.y, o.w, o.h}
+						replay.wait.nids += 1
+					}
+				}
+			}
+			break
+		}
 		if ev.eType == penDownEvent {
 			x, y := i32(ev.screenX), i32(ev.screenY)
 			if x < f.x || y < f.y || x >= f.x + f.w || y >= f.y + f.h {continue}
@@ -837,11 +874,18 @@ run_transaction :: proc() -> bool {
 	replay.pos = 0
 	replay.waiting = false
 	replay.depth = 0
+	replay.wait = {}
 	for {
 		ev, ok := queue_pop()
 		if !ok {
 			inp, ok2 := next_input()
 			if !ok2 {break}
+			if inp.kind == .Call {
+				if bot_hook != nil {bot_hook(inp)}
+				free_all(context.temp_allocator)
+				if replay.waiting {break}
+				continue
+			}
 			ev = input_event(inp)
 			if inp.kind == .Start {ev.data.keyDown.chr = 0xFFFF}
 		}
@@ -860,7 +904,7 @@ run_transaction :: proc() -> bool {
 feed :: proc(inp: Input) -> bool {
 	append(&replay.log, inp)
 	committed := run_transaction()
-	if committed {
+	if committed && !replay.no_save {
 		autosave()
 	}
 	return committed

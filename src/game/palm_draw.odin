@@ -65,7 +65,11 @@ pset :: #force_inline proc "contextless" (x, y: i32, c: u8) {
 	hpset(x * 2 + 1, y * 2 + 1, c)
 }
 
+// Playtest bots run without pixels: drawing becomes a no-op (game logic never reads the framebuffer).
+headless: bool
+
 fill :: proc "contextless" (x, y, w, h: i32, c: u8) {
+	if headless {return}
 	for yy in y ..< y + h {
 		for xx in x ..< x + w {
 			pset(xx, yy, c)
@@ -75,6 +79,7 @@ fill :: proc "contextless" (x, y, w, h: i32, c: u8) {
 
 // Rounded rectangle outline, corner radius r (0..2).
 frame_rect :: proc "contextless" (x, y, w, h: i32, r: i32, c: u8) {
+	if headless {return}
 	for xx in x + r ..< x + w - r {
 		pset(xx, y, c)
 		pset(xx, y + h - 1, c)
@@ -105,6 +110,7 @@ glyph_hadv :: proc "contextless" (ch: u8, font: i32) -> i32 {
 }
 
 draw_glyph :: proc "contextless" (ch: u8, hx, hy: i32, font: i32, col: u8) {
+	if headless {return}
 	if ch == 0xA9 {
 		x := hx
 		for c in "(c)" {
@@ -194,6 +200,7 @@ WinDrawInvertedChars :: proc "contextless" (chars: cstring, n: i16, x: i16, y: i
 }
 
 line :: proc "contextless" (x1, y1, x2, y2: i32, c: u8) {
+	if headless {return}
 	dx := abs(x2 - x1)
 	dy := -abs(y2 - y1)
 	sx: i32 = 1 if x1 < x2 else -1
