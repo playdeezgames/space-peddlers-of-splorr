@@ -5,9 +5,9 @@ Page: https://thegrumpygamedev.itch.io/space-peddlers-of-splorr (created as a **
 
 ## Short description (the one-line field)
 
-Buy low, sell high, dodge the pirates. A faithful browser port of Space Trader, the classic Palm OS trading game.
+Buy low, sell high, dodge the pirates. A faithful browser port of Pieter Spronck's classic Palm OS trading game.
 
-(113 characters; itch.io allows 120.)
+(112 characters; itch.io allows 120. Reworded November 27, 2026 at the user's word so it does not use the Space Trader name.)
 
 ## Page text
 
@@ -27,7 +27,7 @@ Tap with the mouse or a finger, as on the Palm. Letters are the original's short
 
 ### About it
 
-The pictures are placeholders: the original art is Alexander Lawrence's and is not covered by the GPL, so it is not used. New art is coming.
+The pictures are placeholders: the original art is Alexander Lawrence's and is not covered by the GPL, so it is not used.
 
 This is not an official Space Trader release; Pieter Spronck asked that new versions not use that name.
 
