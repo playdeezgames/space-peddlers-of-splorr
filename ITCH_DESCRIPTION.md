@@ -1,6 +1,6 @@
 # itch.io page copy: Space Peddlers of SPLORR!!
 
-Page: https://thegrumpygamedev.itch.io/space-peddlers-of-splorr (not created yet; the slug is a guess until it exists; first release booked in Coxswain for November 28, 2026, ship only on the user's "ship").
+Page: https://thegrumpygamedev.itch.io/space-peddlers-of-splorr (created as a **Draft** through the user's Chrome on November 27, 2026, edit id 5457782; the slug matches `tools/ship.sh`; first release booked in Coxswain for November 28, 2026, ship only on the user's "ship"). Pricing was left at itch's default ($0 or donate, $2 suggested): the user's call.
 **Draft, written November 20, 2026; the user has not approved any of it.** Pasted in by hand; nothing here is published by the repo. Cover: `assets/cover.png` (630 by 500, drawn by `tools/make_cover.py` from the game's own Short Range Chart frame). Screenshots: `assets/screenshots/01-title.png` to `05-galactic-chart.png` (native frames at 2x, by `tools/make_shots.sh`).
 
 ## Short description (the one-line field)
@@ -39,6 +39,8 @@ This is not an official Space Trader release; Pieter Spronck asked that new vers
 - This port is GPL too. Source: https://github.com/playdeezgames/space-peddlers-of-splorr
 - Font: m6x11 by Daniel Linssen, https://managore.itch.io/m6x11
 - Port: TheGrumpyGameDev, with Claude Code (AI).
+
+*This page was set up by Claude, an AI agent (Claude Code), on behalf of The Grumpy GameDev.*
 
 ## Page settings (by hand, when the time comes)
 
