@@ -1,6 +1,6 @@
 # itch.io page copy: Space Peddlers of SPLORR!!
 
-Page: https://thegrumpygamedev.itch.io/space-peddlers-of-splorr (created as a **Draft** through the user's Chrome on November 27, 2026, edit id 5457782; the slug matches `tools/ship.sh`; first release booked in Coxswain for November 28, 2026, ship only on the user's "ship"). Pricing was left at itch's default ($0 or donate, $2 suggested): the user's call.
+Page: https://thegrumpygamedev.itch.io/space-peddlers-of-splorr (created as a **Draft** through the user's Chrome on November 27, 2026, edit id 5457782; the slug matches `tools/ship.sh`; first release booked in Coxswain for November 28, 2026, ship only on the user's "ship"). Pricing: **No payments** (the user's word, November 27, 2026).
 **Draft, written November 20, 2026; the user has not approved any of it.** Pasted in by hand; nothing here is published by the repo. Cover: `assets/cover.png` (630 by 500, drawn by `tools/make_cover.py` from the game's own Short Range Chart frame). Screenshots: `assets/screenshots/01-title.png` to `05-galactic-chart.png` (native frames at 2x, by `tools/make_shots.sh`).
 
 ## Short description (the one-line field)
@@ -44,6 +44,7 @@ This is not an official Space Trader release; Pieter Spronck asked that new vers
 
 ## Page settings (by hand, when the time comes)
 
+- Pricing: No payments (the user's word, November 27, 2026).
 - Kind of project: HTML. Tick "played in the browser". Uploads: only the `html` channel.
 - Embed: "Click to launch in fullscreen" (the user's rule for every game, November 13, 2026). Mobile friendly: yes, portrait orientation (the screen is square, with buttons under it).
 - External link: `Latest version (GitHub Pages)` to https://playdeezgames.github.io/space-peddlers-of-splorr/
