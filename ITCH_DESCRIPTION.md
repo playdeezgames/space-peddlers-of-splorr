@@ -1,7 +1,7 @@
 # itch.io page copy: Space Peddlers of SPLORR!!
 
-Page: https://thegrumpygamedev.itch.io/space-peddlers-of-splorr (created as a **Draft** through the user's Chrome on November 27, 2026, edit id 5457782; the slug matches `tools/ship.sh`; first release booked in Coxswain for November 28, 2026, ship only on the user's "ship"). Pricing: **No payments** (the user's word, November 27, 2026).
-**Draft, written November 20, 2026; the user has not approved any of it.** Pasted in by hand; nothing here is published by the repo. Cover: `assets/cover.png` (630 by 500, drawn by `tools/make_cover.py` from the game's own Short Range Chart frame). Screenshots: `assets/screenshots/01-title.png` to `05-galactic-chart.png` (native frames at 2x, by `tools/make_shots.sh`).
+Page: https://thegrumpygamedev.itch.io/space-peddlers-of-splorr (created as a Draft through the user's Chrome on November 27, 2026, edit id 5457782; **shipped and made public November 28, 2026**, at the user's "ship today's ship target"). Pricing: **No payments** (the user's word, November 27, 2026).
+Written November 20, 2026; live on the page since November 28, 2026. Nothing here is published by the repo. Cover: `assets/cover.png` (630 by 500, drawn by `tools/make_cover.py` from the game's own Short Range Chart frame). Screenshots: `assets/screenshots/01-title.png` to `05-galactic-chart.png` (native frames at 2x, by `tools/make_shots.sh`).
 
 ## Short description (the one-line field)
 

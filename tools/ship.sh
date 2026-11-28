@@ -2,8 +2,7 @@
 # Prepares the itch.io html build: tests, a size-optimised web build, a zip. Pushes ONLY with --push.
 # Never commits, never deletes anything but its own zip. Usage: tools/ship.sh [--push]
 # Page: https://thegrumpygamedev.itch.io/space-peddlers-of-splorr
-# There is no itch.io page yet; the target below is the expected slug, to confirm with the user
-# before the first push (one ship a day, booked through Coxswain).
+# The page exists (shipped November 28, 2026); the target below is its html channel.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 TARGET="thegrumpygamedev/space-peddlers-of-splorr:html"
